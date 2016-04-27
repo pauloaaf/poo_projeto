@@ -46,7 +46,20 @@ public class Imoobiliaria {
     public void registaImovel(Imovel im)
         throws ImovelExisteException,
                SemAutorizacaoException{
-        
+                   if(utilizadorIniciado == null || utilizadorIniciado.getTipo() == 1) {
+                       throw new SemAutorizacaoException("Sem direitos");
+                       
+                   }
+                   
+                   if(utilizadorIniciado.getTipo() == 0) {
+                      for( Imovel i : imoveisRegistados) {
+                        if(im.equals(i)) {
+                           throw new ImovelExisteException("Imovel existente");
+                       }
+                   }
+                    imoveisRegistados.add(im.clone());
+      
+                }  
                    
     }
 
