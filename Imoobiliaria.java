@@ -72,7 +72,7 @@ public class Imoobiliaria {
                 throw new SemAutorizacaoException("Password errada!");
             if(utilizador.getEmail().equals(email) && utilizador.getPassword().equals(password)){
                 sessaoIniciada = true;
-                utilizadorIniciado = utilizador;
+                utilizadorIniciado = utilizador.clone();
                 return;
             }
         }
