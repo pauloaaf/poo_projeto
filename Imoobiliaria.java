@@ -43,10 +43,23 @@ public class Imoobiliaria {
 
     public void setSessaoInicia(boolean sessaoIniciada) {this.sessaoIniciada = sessaoIniciada;}
     
-    public void registaImovel(Imovel im)
+public void registaImovel(Imovel im)
         throws ImovelExisteException,
                SemAutorizacaoException{
-        
+                   if(utilizadorIniciado == null || utilizadorIniciado.getTipo() == 1) {
+                       throw new SemAutorizacaoException("Sem direitos");
+                       
+                   }
+                   
+                   if(utilizadorIniciado.getTipo() == 0) {
+                      for( Imovel i : imoveisRegistados) {
+                        if(im.equals(i)) {
+                           throw new ImovelExisteException("Imovel existente");
+                       }
+                   }
+                    imoveisRegistados.add(im.clone());
+      
+                }  
                    
     }
 
@@ -80,6 +93,19 @@ public class Imoobiliaria {
             }
         }
         throw new SemAutorizacaoException("Utilizador nao existe!");
+    }
+    
+    public List <Imovel> getImovel ( String classe , int preco ) {
+    List<Imovel> lista = new ArrayList<>();
+    if(imoveisRegistados.isEmpty()) return lista;
+        for(Imovel i : imoveisRegistados) {
+            if(classe.equals(i.getTipoImovel())){
+                if(i.getPrecoPedido()<=preco) {
+                    lista.add(i.clone());
+                }
+            }
+        }
+        return lista;
     }
     
     public void fechaSessao(){
