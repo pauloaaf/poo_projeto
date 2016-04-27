@@ -4,7 +4,7 @@ import java.util.TreeSet;
 public class Imoobiliaria {
     
     private boolean sessaoIniciada = false;
-    private Utilizador utilizadorIniciado;
+    private Utilizador utilizadorIniciado = null;
     private Set<Utilizador> utilizadoresRegistados;
     private Set<Imovel> imoveisRegistados;
     
@@ -33,10 +33,10 @@ public class Imoobiliaria {
         return res;
     }
     
-    public void setImoveisRegistados(Set<Imovel> iRegistados){
-        imoveisRegistados.clear();
-        for(Imovel im:iRegistados)
-            imoveisRegistados.add(im.clone());
+    public void setImoveisRegistados(Set<Imovel> imoveisRegistados){
+        this.imoveisRegistados.clear();
+        for(Imovel im:imoveisRegistados)
+            this.imoveisRegistados.add(im.clone());
     }
     
     public boolean getSessaoInicia() {return sessaoIniciada;}
@@ -46,20 +46,7 @@ public class Imoobiliaria {
     public void registaImovel(Imovel im)
         throws ImovelExisteException,
                SemAutorizacaoException{
-                   if(utilizadorIniciado == null || utilizadorIniciado.getTipo() == 1) {
-                       throw new SemAutorizacaoException("Sem direitos");
-                       
-                   }
-                   
-                   if(utilizadorIniciado.getTipo() == 0) {
-                      for( Imovel i : imoveisRegistados) {
-                        if(im.equals(i)) {
-                           throw new ImovelExisteException("Imovel existente");
-                       }
-                   }
-                    imoveisRegistados.add(im.clone());
-      
-                }  
+        
                    
     }
 
@@ -69,11 +56,14 @@ public class Imoobiliaria {
         r.registar(utilizador);//RegistaUtilizador.java*/
         
         //verificar se o utilizador ja existe
-        if(utilizadoresRegistados.contains(utilizador))
-            throw new UtilizadorExistenteException("Este utilizador ja existe!");
+        boolean existe = false;
         
-        utilizadoresRegistados.add(utilizador);
+        for(Utilizador user:utilizadoresRegistados)
+            if(user.equals(utilizador))    
+                existe = true;
         
+        if(existe) throw new UtilizadorExistenteException("Este utilizador ja existe!");
+        else utilizadoresRegistados.add(utilizador);
     }
     
     public void iniciaSessao(String email, String password)
@@ -89,6 +79,7 @@ public class Imoobiliaria {
                 return;
             }
         }
+        throw new SemAutorizacaoException("Utilizador nao existe!");
     }
     
     public void fechaSessao(){
@@ -96,16 +87,20 @@ public class Imoobiliaria {
         utilizadorIniciado = null;
     }
     
-    public static void initApp(){
+    public void initApp(){
         //RegistaUtilizador r = new RegistaUtilizador();//RegistaUtilizador.java
         //Utilizador utilizador = r.recolheDados();
-        
-        
+        Utilizador u = new Utilizador();
+        try{
+            registaUtilizador(u);
+        }catch(UtilizadorExistenteException exc){
+            System.out.println(exc.toString());
+        }
     }
 
     public static void main(String[] args)
         throws UtilizadorExistenteException{
         //initApp();
-        Ficheiro f = new Ficheiro();
+        
     }
 }
